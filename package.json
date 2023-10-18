@@ -1,0 +1,22 @@
+{
+  "name": "server-side",
+  "version": "1.0.0",
+  "description": "An application to book bus tickets",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server-side/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "C",
+  "license": "ISC",
+  "dependencies": {
+    "hapi": "~16.1.0",
+    "joi": "~10.2.2",
+    "nodemon": "^3.0.1",
+    "pg": "^8.7.1",
+    "pg-hstore": "~2.3.2",
+    "require-directory": "^2.1.1",
+    "sequelize": "^5.21.3",
+    "config": "~1.25.1"
+  }
+}

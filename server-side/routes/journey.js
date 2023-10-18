@@ -1,0 +1,1 @@
+const journeyControllers = require('../controllers/journey.js');

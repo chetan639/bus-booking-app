@@ -1,0 +1,13 @@
+{
+    "server":{
+        "PORT": 3000,
+        "host": "localhost"
+    },
+    "dbConfig":{
+        "dbName": "bookBus",
+        "userName": "guduruchetan",
+        "password": "",
+        "dialect": "postgres",
+        "host": "localhost"
+    }
+}
