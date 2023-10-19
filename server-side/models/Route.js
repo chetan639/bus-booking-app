@@ -22,5 +22,8 @@ module.exports = (sequelize)=>{
         paranoid: true
     });
     
+    Route.associate = models=>{
+        Route.hasMany(models.Journey,{foreignKey: 'routeId'});
+    }
     return Route;
 }

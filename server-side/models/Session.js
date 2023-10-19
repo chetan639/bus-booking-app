@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 
 module.exports = (sequelize)=>{
     const Session = sequelize.define('session',{
-        sessionId: {
+        id: {
             type: Sequelize.INTEGER,
             primaryKey: true,
             autoIncrement: true
@@ -11,7 +11,7 @@ module.exports = (sequelize)=>{
             type: Sequelize.INTEGER,
             allowNull: false
         },
-        sessionName: {
+        sessionId: {
             type: Sequelize.INTEGER,
             allowNull: false
         },
@@ -23,6 +23,9 @@ module.exports = (sequelize)=>{
         paranoid: true
     });
     
+    Session.associate = models=>{
+        Session.belongsTo(models.User,{foreignKey: 'userId'});
+    }
     return Session;
 }
 

@@ -23,5 +23,9 @@ module.exports = (sequelize) => {
         paranoid: true
     });
     
+    Rating.associate = models=>{
+        Rating.belongsTo(models.Bus,{foreignKey: 'busId'});
+        Rating.belongsTo(models.User,{foreignKey: 'userId'});
+    }
     return Rating;
 }

@@ -53,6 +53,13 @@ module.exports = (sequelize)=>{
     },{
         paranoid: true
     });
+
+    User.associate = models=>{
+        User.hasMany(models.Booking,{foreignKey: 'userId'});
+        User.hasOne(models.Operator,{foreignKey: 'userId'});
+        User.hasMany(models.Rating,{foreignKey: 'userId'});
+        User.hasMany(models.Session,{foreignKey: 'userId'});
+    }
     
     return User;
 }

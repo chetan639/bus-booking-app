@@ -27,5 +27,10 @@ module.exports = (sequelize)=>{
         paranoid: true
     });
     
+    Journey.associate = models=>{
+        Journey.belongsTo(models.Bus,{foreignKey: 'busId'});
+        Journey.hasMany(models.Booking,{foreignKey: 'journeyId'});
+        Journey.belongsTo(models.Route,{foreignKey: 'routeId'});
+    }
     return Journey;
 }

@@ -1,47 +1,53 @@
 const Sequelize = require('sequelize');
-const {seater,semiSleeper,sleeper} = require('../commonConstants/modelConstants.js');
+const { seater, semiSleeper, sleeper } = require('../commonConstants/modelConstants.js');
 
-module.exports = (sequelize)=>{
-    const Bus = sequelize.define('bus',{
+module.exports = (sequelize) => {
+    const Bus = sequelize.define('bus', {
         busId: {
             type: Sequelize.INTEGER,
             primaryKey: true,
             autoIncrement: true
         },
-        operatorId:{
+        operatorId: {
             type: Sequelize.INTEGER,
             allowNull: false
         },
-        busNumber:{
+        busNumber: {
             type: Sequelize.INTEGER,
             allowNull: false
         },
-        busType:{
-            type: Sequelize.ENUM(seater,semiSleeper,sleeper),
+        busType: {
+            type: Sequelize.ENUM(seater, semiSleeper, sleeper),
             allowNull: false
         },
-        seatingCapacity:{
+        seatingCapacity: {
             type: Sequelize.INTEGER,
             allowNull: false,
             min: 1,
             max: 50
         },
-        busAmenities:{
+        busAmenities: {
             type: Sequelize.JSONB,
             allowNull: false
         },
-        rating:{
+        rating: {
             type: Sequelize.INTEGER,
             allowNull: false,
             defaultValue: 0
         },
-        isAC:{
+        isAC: {
             type: Sequelize.BOOLEAN,
             allowNull: false
         }
-    },{
+    }, {
         paranoid: true
     });
+
+    Bus.associate = models => {
+        Bus.hasMany(models.Journey, { foreignKey: 'busId' });
+        Bus.hasMany(models.Rating, { foreignKey: 'busId' });
+        Bus.belongsTo(models.Operator,{foreignKey: 'operatorId'}); 
+    }
     
     return Bus;
 }

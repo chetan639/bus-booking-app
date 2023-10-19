@@ -2,13 +2,15 @@ const Hapi = require('hapi');
 const Joi = require('joi');
 const config = require('config');
 const serverConfig = config.get('server');
+const AuthCookie = require('hapi-auth-cookie');
+const {Models} = require('./models');
 
-const { sequelize } = require('./models/index.js')
+const { sequelize } = require('./models/index.js');
 
-const server = new Hapi.Server();
 
-const init = async () => {
+const startServer = async () => {
     
+    const server = new Hapi.Server();
     server.connection({
         host: serverConfig.host,
         port: serverConfig.PORT,
@@ -18,16 +20,61 @@ const init = async () => {
         if (error) console.log('err', error)
     });
     console.log(`Server running`);
+
+    await server.register(AuthCookie);
+    
+    server.auth.strategy('session', 'cookie', {
+        cookie: 'restriction',
+        password: 'jsh7h98h9a8bf0a8usbdbf90s8bf98sdvnbpisujdhfgpa98', // Change this to a secret key
+        isSecure: false, // In production, set this to true for HTTPS
+        redirectTo: '/user/login', // Redirect to the login page if not authenticated,
+
+        validateFunc: async (request, session,callback) => {
+            try{
+                if(!session){
+                    return callback(null, false);
+                }
+                
+                const user = await Models.Session.findOne({
+                    where:{
+                        sessionId: session.id
+                    }
+                })
+                
+                if(!user){
+                    return callback(null,false);
+                }
+                
+                return callback(null, true, user);
+            }catch(error){
+                console.log("Validation error:",error);
+                return callback(error,false);
+            }
+        }
+      });
+
+    server.route({
+        method: 'GET',
+        path: '/',
+        config:{
+            auth:
+            {
+                mode: 'try',
+                strategy: 'session'
+            },
+            handler: (request,response)=>{
+                return response({message: "Hello World"});
+            }
+        },
+    });
+
+    server.route(require('./routes/user.js'));
 }
 
 process.on('unhandledRejection', (err) => {
     console.log(err);
     process.exit(1);
 });
-
-
-
-
 
 const startDB = async () => {
 
@@ -39,5 +86,8 @@ const startDB = async () => {
     }
 }
 
-init();
+startServer();
 startDB();
+// setStrategy();
+
+

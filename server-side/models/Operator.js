@@ -27,5 +27,9 @@ module.exports = (sequelize)=>{
         paranoid: true
     });
     
+    Operator.associate = models=>{
+        Operator.hasMany(models.Bus,{foreignKey: 'operatorId'});
+        Operator.belongsTo(models.User,{foreignKey: 'userId'});    
+    }
     return Operator;
 }

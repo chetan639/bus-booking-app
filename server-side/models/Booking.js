@@ -38,6 +38,11 @@ module.exports = (sequelize)=>{
     },{
         paranoid: true
     });
+
+    Booking.associate = models => {
+        Booking.belongsTo(models.User,{foreignKey: 'userId'});
+        Booking.belongsTo(models.Journey,{foreignKey: 'journeyId'});
+    }
     return Booking;
 }
 
