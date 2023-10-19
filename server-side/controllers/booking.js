@@ -48,6 +48,15 @@ const updateBooking = async(request,reply)=>{
     const updatedDetails = request.payload;
     const {bookingId} = request.params;
     try {
+        const booking = await Models.Booking.findOne({
+            where:{
+                bookingId: bookingId
+            }
+        });
+
+        if (!booking) {
+            return reply('booking does not exist').code(401);
+        }
         const updatedBooking = await Models.Booking.update(
             updatedDetails,
             {
@@ -71,6 +80,16 @@ const updateBooking = async(request,reply)=>{
 const deleteBooking = async(request,reply)=>{
     const {bookingId} = request.params;
     try {
+        const booking = await Models.Booking.findOne({
+            where:{
+                bookingId: bookingId
+            }
+        });
+
+        if (!booking) {
+            return reply('booking does not exist').code(401);
+        }
+        
         const deletedBooking = await Models.Booking.destroy({
                 where: bookingId
             }

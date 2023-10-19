@@ -29,7 +29,7 @@ const getOperatorBuses = async(request,reply)=>{
             }
         })
         if(!operator){
-            return reply('User does not exist').code(401);
+            return reply('Operator does not exist').code(401);
         }
         const buses = Models.Bus.findAll({
             where:{
@@ -38,7 +38,7 @@ const getOperatorBuses = async(request,reply)=>{
         });
 
         if(!buses){
-            return reply('No bookings for this user').code(401);
+            return reply('No buses for this operator').code(401);
         }
 
         return reply(buses);
@@ -69,7 +69,16 @@ const updateBus = async(request,reply)=>{
     const updatedDetails = request.payload;
     const {busId} = request.params;
     try {
-        const updatedBooking = await Models.Booking.update(
+        const bus = await Models.Bus.findOne({
+            where:{
+                busId: busId
+            }
+        });
+
+        if (!bus) {
+            return reply('bus does not exist').code(401);
+        }
+        const updatedBuses = await Models.Bus.update(
             updatedDetails,
             {
                 where: {
@@ -78,11 +87,11 @@ const updateBus = async(request,reply)=>{
             }
         );
         
-        if(!updatedBooking){
-            return reply('Error updating booking').code(401);
+        if(!updatedBuses){
+            return reply('Error updating bus details').code(401);
         }
         
-        return reply('Booking details updated successfully').code(200);
+        return reply('Bus details updated successfully').code(200);
     } catch (error) {
         console.log(error);
         return reply('Internal Server Error').code(500);
@@ -100,9 +109,9 @@ const deleteBus = async(request,reply)=>{
         );
         
         if(!deletedBus){
-            return reply('Error deleting booking').code(401);
+            return reply('Error deleting bus').code(401);
         }
-        return reply('Booking details deleted').code(200);
+        return reply('Bus details deleted').code(200);
     } catch (error) {
         console.log(error);
         return reply('Internal Server Error').code(500);

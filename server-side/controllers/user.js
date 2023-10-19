@@ -89,8 +89,63 @@ const userLogout = async (request,reply)=>{
     }
 }
 
+const updateUser = async(request,reply)=>{
+    const updatedDetails = request.payload;
+    const {userId} = request.params;
+    try {
+        const user = await Models.User.findOne({
+            where:{
+                userId: userId
+            }
+        });
+
+        if (!user) {
+            return reply('user does not exist').code(401);
+        }
+        const updatedUsers = await Models.User.update(
+            updatedDetails,
+            {
+                where: {
+                    userId: userId
+                }
+            }
+        );
+        
+        if(!updatedUsers){
+            return reply('Error updating user details').code(401);
+        }
+        
+        return reply('user details updated successfully').code(200);
+    } catch (error) {
+        console.log(error);
+        return reply('Internal Server Error').code(500);
+    }
+};
+
+const deleteUser = async(request,reply)=>{
+    const {userId} = request.params;
+    try {
+        const deletedUser = await Models.User.destroy({
+                where: {
+                    userId: userId
+                }
+            }
+        );
+        
+        if(!deletedUser){
+            return reply('Error deleting user').code(401);
+        }
+        return reply('User details deleted').code(200);
+    } catch (error) {
+        console.log(error);
+        return reply('Internal Server Error').code(500);
+    }
+}
+
 module.exports = {
     userLogin,
     userSignup,
-    userLogout
+    userLogout,
+    updateUser,
+    deleteUser
 }

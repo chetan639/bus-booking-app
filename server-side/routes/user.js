@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const userControllers = require('../controllers/user.js')
+const controllers = require('../controllers');
 
 module.exports = [
     {
@@ -28,7 +28,7 @@ module.exports = [
                     password: Joi.string(),
                 }
             },
-            handler: userControllers.userLogin
+            handler: controllers.user.userLogin
         },
     },
     {
@@ -50,7 +50,7 @@ module.exports = [
                 })
             }
         },
-        handler: userControllers.userSignup
+        handler: controllers.user.userSignup
     },
     {
         method: 'POST',
@@ -61,7 +61,29 @@ module.exports = [
                 strategy: 'session'
             }
         },
-        handler: userControllers.userLogout
+        handler: controllers.user.userLogout
+    },
+    {
+        method: 'PUT',
+        path: '/user/update/{userId}',
+        config:{
+            auth: {
+                mode: 'required',
+                strategy: 'session'
+            }
+        },
+        handler: controllers.user.updateUser
+    },
+    {
+        method: "DELETE",
+        path: '/user/delete/{userId}',
+        config:{
+            auth:{
+                mode: 'required',
+                strategy: 'session'
+            }
+        },
+        handler: controllers.user.deleteUser
     }
 
 ]
