@@ -1,18 +1,18 @@
 const Joi = require('joi');
 const controllers = require('../controllers');
-const {getJourney,createJourney,updateJourney,deleteJourney} = controllers.journey
+const {getRoute,createRoute,updateRoute,deleteRoute} = controllers.route
 
 module.exports = [
     {
         method: 'GET',
-        path: '/api/internal/journey/{journeyId}',
+        path: '/api/internal/route/{routeId}',
         config:{
-            handler: getJourney
+            handler: getRoute
         }
     },
     {
         method: 'POST',
-        path: '/api/internal/journey',
+        path: '/api/internal/route',
         config: {
             auth: {
                 mode: 'try',
@@ -20,18 +20,17 @@ module.exports = [
             },
             validate:{
                 payload: Joi.object({
-                    busId: Joi.number().integer().required(),
-                    routeId: Joi.number().integer().required(),
-                    departureTime: Joi.date().required(),
-                    arrivalTime: Joi.date().required()
+                    source: Joi.string().required(),
+                    destination: Joi.string().required(),
+                    inBetweenStops: Joi.array()
                 })
             },
-            handler: createJourney
+            handler: createRoute
         }
     },
     {
         method: 'PUT',
-        path: '/api/internal/journey/{journeyId}',
+        path: '/api/internal/route/{routeId}',
         config:{
             auth:{
                 mode: 'required',
@@ -39,24 +38,23 @@ module.exports = [
             },
             validate:{
                 payload: Joi.object({
-                    busId: Joi.number().integer(),
-                    routeId: Joi.number().integer(),
-                    departureTime: Joi.date(),
-                    arrivalTime: Joi.date()
+                    source: Joi.string(),
+                    destination: Joi.string(),
+                    inBetweenStops: Joi.array().items(Joi.object())
                 })
             },
-            handler: updateJourney
+            handler: updateRoute
         }
     },
     {
         method: 'DELETE',
-        path: '/api/internal/journey/{journeyId}',
+        path: '/api/internal/route/{routeId}',
         config: {
             auth:{
                 mode: 'required',
                 strategy: 'session'
             },
-            handler: deleteJourney
+            handler: deleteRoute
         }
     }
 ]

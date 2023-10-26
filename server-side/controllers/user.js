@@ -1,13 +1,6 @@
 const {Models} = require('../models');
 const bcrypt = require('bcrypt');
-
-Models.User.beforeCreate(async (user,options)=>{
-    const saltRounds = 10;
-    const salt = await bcrypt.genSalt(saltRounds);
-    const hash = await bcrypt.hash(user.password, salt);
-    user.password = hash;
-    user.salt = salt;
-});
+const {getOrSetToRedis,clearRedis} = require('../utils/redis.js');
 
 const userLogin = async(request,reply)=>{
     const {emailId,password} = request.payload;
@@ -16,11 +9,15 @@ const userLogin = async(request,reply)=>{
         if(request.auth.isAuthenticated){
             return reply.redirect('/');
         }
-        const user = await Models.User.findOne({
-            where:{
-                emailId: emailId
-            }
-        });
+
+        const user = await getOrSetToRedis(`user:${emailId}`,Models.User,async (User)=>{
+            return await User.findOne({
+                where:{
+                    emailId: emailId
+                }
+            });
+        })
+        
 
         if(!user){
             return reply({message: 'Authentication Failed, Invalid credentials 1'}).code(401);
@@ -40,7 +37,7 @@ const userLogin = async(request,reply)=>{
             userId: user.userId
         });
 
-        await request.cookieAuth.set({id: sid, userId: user.userId});
+        await request.cookieAuth.set({id: sid, userId: user.userId, emailId: user.emailId});
         return reply({message:'User has been logged in!'}).code(200);
     } catch (error) {
         console.log(error);
@@ -82,21 +79,49 @@ const userLogout = async (request,reply)=>{
         if(!updateSession){
             return reply('Error logging out').code(401);
         }
+        clearRedis(`user:${request.auth.artifacts.emailId}`,Models.User);
         request.cookieAuth.clear();
         return reply({message: 'User was logged out'});
     } catch (error) {
+        console.log(error);
         return reply({message: 'Internal server error'}).code(500);
+    }
+}
+
+const getUser = async(request,reply)=>{
+    const {emailId} = request.params;
+
+    try {
+        const user = await getOrSetToRedis(`user:${emailId}`,Models.User,async (User)=>{
+            return await User.findOne({
+                where:{
+                    emailId: emailId
+                }
+            });
+        });
+
+        if(!user){
+            return reply('User does not exist').code(401);
+        }
+
+        return reply(user).code(200);
+    } catch (error) {
+        console.log(error);
+        return reply('Internal server error').code(500);
     }
 }
 
 const updateUser = async(request,reply)=>{
     const updatedDetails = request.payload;
-    const {userId} = request.params;
+    const emailId = request.auth.artifacts.emailId;
+    // const {userId} = request.params;
     try {
-        const user = await Models.User.findOne({
-            where:{
-                userId: userId
-            }
+        const user = await getOrSetToRedis(`user:${emailId}`,Models.User,async (User)=>{
+            return await User.findOne({
+                where:{
+                    emailId: emailId
+                }
+            });
         });
 
         if (!user) {
@@ -106,7 +131,7 @@ const updateUser = async(request,reply)=>{
             updatedDetails,
             {
                 where: {
-                    userId: userId
+                    emailId: emailId
                 }
             }
         );
@@ -115,6 +140,7 @@ const updateUser = async(request,reply)=>{
             return reply('Error updating user details').code(401);
         }
         
+        clearRedis(`user:${user.emailId}`,Models.User);
         return reply('user details updated successfully').code(200);
     } catch (error) {
         console.log(error);
@@ -123,11 +149,23 @@ const updateUser = async(request,reply)=>{
 };
 
 const deleteUser = async(request,reply)=>{
-    const {userId} = request.params;
+    const {emailId} = request.params;
+    // const emailId = request.auth.artifacts.emailId;
     try {
+        const user = await getOrSetToRedis(`user:${emailId}`,Models.User,async (User)=>{
+            return await User.findOne({
+                where:{
+                    emailId: emailId
+                }
+            });
+        });
+
+        if(!user){
+            return reply('No such user').code(401);
+        }
         const deletedUser = await Models.User.destroy({
                 where: {
-                    userId: userId
+                    emailId: emailId
                 }
             }
         );
@@ -135,6 +173,8 @@ const deleteUser = async(request,reply)=>{
         if(!deletedUser){
             return reply('Error deleting user').code(401);
         }
+
+        clearRedis(`user:${user.emailId}`,Models.User);
         return reply('User details deleted').code(200);
     } catch (error) {
         console.log(error);
@@ -146,6 +186,7 @@ module.exports = {
     userLogin,
     userSignup,
     userLogout,
+    getUser,
     updateUser,
     deleteUser
 }

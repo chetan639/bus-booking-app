@@ -51,7 +51,16 @@ module.exports = (sequelize)=>{
             type: Sequelize.BOOLEAN
         }
     },{
-        paranoid: true
+        paranoid: true,
+        hooks:{
+            beforeCreate: async (user,options)=>{
+                const saltRounds = 10;
+                const salt = await bcrypt.genSalt(saltRounds);
+                const hash = await bcrypt.hash(user.password, salt);
+                user.password = hash;
+                user.salt = salt;
+            }
+        }
     });
 
     User.associate = models=>{

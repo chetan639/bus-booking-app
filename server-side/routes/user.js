@@ -4,16 +4,16 @@ const controllers = require('../controllers');
 module.exports = [
     {
         method: 'GET',
-        path: '/user/login',
+        path: '/api/internal/user/login',
         config: {
             handler: (req, res) => {
-                return res({ message: 'hi' })
+                return res({ message: 'Unauthorized access' })
             }
         },
     },
     {
         method: 'POST',
-        path: '/user/login',
+        path: '/api/internal/user/login',
         config: {
             auth: {
                 mode: 'try',
@@ -33,7 +33,7 @@ module.exports = [
     },
     {
         method: 'POST',
-        path: '/user/signup',
+        path: '/api/internal/user/signup',
         config: {
             auth: false,
             validate: {
@@ -46,7 +46,7 @@ module.exports = [
                     lastName: Joi.string(),
                     address: Joi.string(),
                     paymentDetails: Joi.object(),
-                    isOperator: Joi.boolean()
+                    isOperator: Joi.boolean().default(false)
                 })
             }
         },
@@ -54,7 +54,7 @@ module.exports = [
     },
     {
         method: 'POST',
-        path: '/user/logout',
+        path: '/api/internal/user/logout',
         config: {
             auth: {
                 mode: 'required',
@@ -64,19 +64,43 @@ module.exports = [
         handler: controllers.user.userLogout
     },
     {
+        method: 'GET',
+        path: '/api/internal/user/{emailId}',
+        config: {
+            auth: {
+                mode: 'required',
+                strategy: 'session'
+            },
+            handler: controllers.user.getUser
+        }
+    },
+    {
         method: 'PUT',
-        path: '/user/update/{userId}',
+        path: '/api/internal/user',
         config:{
             auth: {
                 mode: 'required',
                 strategy: 'session'
-            }
+            },
+            validate: {
+                payload: Joi.object({
+                    userName: Joi.string(),
+                    emailId: Joi.string().email(),
+                    password: Joi.string(),
+                    phoneNumber: Joi.string(),
+                    firstName: Joi.string(),
+                    lastName: Joi.string(),
+                    address: Joi.string(),
+                    paymentDetails: Joi.object(),
+                    isOperator: Joi.boolean().default(false)
+                })
+            },
+            handler: controllers.user.updateUser
         },
-        handler: controllers.user.updateUser
     },
     {
         method: "DELETE",
-        path: '/user/delete/{userId}',
+        path: '/api/internal/user/{emailId}',
         config:{
             auth:{
                 mode: 'required',

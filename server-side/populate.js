@@ -156,7 +156,7 @@ const busDummyData = [
     },
     {
       operatorId: 1,
-      busNumber: 101,
+      busNumber: 102,
       busType: "Seater",
       seatingCapacity: 30,
       busAmenities: {
@@ -169,7 +169,7 @@ const busDummyData = [
     },
     {
       operatorId: 2,
-      busNumber: 202,
+      busNumber: 203,
       busType: "Semi Sleeper",
       seatingCapacity: 40,
       busAmenities: {
@@ -486,78 +486,104 @@ const operatorDummyData = [
   // Add more operator objects as needed
 ];
 const routeDummyData = [
+    {
+      source: "City P",
+      destination: "City Q",
+      inBetweenStops: [
+        {
+          stopName: "Stop 14",
+          distanceFromSource: 10,
+          timeFromSource: "1 hour"
+        },
+        {
+          stopName: "Stop 15",
+          distanceFromSource: 20,
+          timeFromSource: "2 hours"
+        },
+        {
+          stopName: "Stop 16",
+          distanceFromSource: 30,
+          timeFromSource: "3 hours"
+        }
+      ]
+    },
+    {
+      source: "City Q",
+      destination: "City R",
+      inBetweenStops: [
+        {
+          stopName: "Stop 17",
+          distanceFromSource: 15,
+          timeFromSource: "1.5 hours"
+        },
+        {
+          stopName: "Stop 18",
+          distanceFromSource: 30,
+          timeFromSource: "3 hours"
+        },
+        {
+          stopName: "Stop 19",
+          distanceFromSource: 45,
+          timeFromSource: "4.5 hours"
+        }
+      ]
+    },
+    {
+      source: "City S",
+      destination: "City T",
+      inBetweenStops: [
+        {
+          stopName: "Stop 20",
+          distanceFromSource: 5,
+          timeFromSource: "0.5 hours"
+        }
+      ]
+    },
+  // Additional routes and in-between stops
   {
-    source: "City A",
-    destination: "City B",
-    inBetweenStops: null,
+    source: "City X",
+    destination: "City Y",
+    inBetweenStops: [
+      {
+        stopName: "Stop A",
+        distanceFromSource: 10,
+        timeFromSource: "1 hour"
+      },
+      {
+        stopName: "Stop B",
+        distanceFromSource: 20,
+        timeFromSource: "2 hours"
+      },
+      {
+        stopName: "Stop C",
+        distanceFromSource: 30,
+        timeFromSource: "3 hours"
+      }
+    ]
   },
   {
-    source: "City B",
-    destination: "City C",
-    inBetweenStops: null,
+    source: "City Y",
+    destination: "City Z",
+    inBetweenStops: [
+      {
+        stopName: "Stop D",
+        distanceFromSource: 15,
+        timeFromSource: "1.5 hours"
+      },
+      {
+        stopName: "Stop E",
+        distanceFromSource: 30,
+        timeFromSource: "3 hours"
+      },
+      {
+        stopName: "Stop F",
+        distanceFromSource: 45,
+        timeFromSource: "4.5 hours"
+      }
+    ]
   },
-  {
-    source: "City A",
-    destination: "City B",
-    inBetweenStops: null,
-  },
-  {
-    source: "City B",
-    destination: "City C",
-    inBetweenStops: null,
-  },
-  {
-    source: "City C",
-    destination: "City D",
-    inBetweenStops: null,
-  },
-  {
-    source: "City D",
-    destination: "City E",
-    inBetweenStops: null,
-  },
-  {
-    source: "City E",
-    destination: "City F",
-    inBetweenStops: null,
-  },
-  {
-    source: "City F",
-    destination: "City G",
-    inBetweenStops: null,
-  },
-  {
-    source: "City G",
-    destination: "City H",
-    inBetweenStops: null,
-  },
-  {
-    source: "City I",
-    destination: "City J",
-    inBetweenStops: null,
-  },
-  {
-    source: "City J",
-    destination: "City K",
-    inBetweenStops: null,
-  },
-  {
-    source: "City K",
-    destination: "City L",
-    inBetweenStops: null,
-  },
-  {
-    source: "City L",
-    destination: "City M",
-    inBetweenStops: null,
-  },
-  {
-    source: "City M",
-    destination: "City N",
-    inBetweenStops: null,
-  },
+]
   // Add more route objects as needed
-];
 
   const userDummyData = [
     {
@@ -589,10 +615,10 @@ const routeDummyData = [
     try {
         // await User.bulkCreate(userDummyData);
         // await Operator.bulkCreate(operatorDummyData);
-        // await Bus.bulkCreate(busDummyData);
+        await Bus.bulkCreate(busDummyData);
         // await Route.bulkCreate(routeDummyData);
-        await Journey.bulkCreate(journeyDummyData);
-        await Booking.bulkCreate(bookingDummyData);
+        // await Journey.bulkCreate(journeyDummyData);
+        // await Booking.bulkCreate(bookingDummyData);
     } catch (error) {
         console.log('Error in bulk loading',error);
     }

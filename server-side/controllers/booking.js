@@ -1,28 +1,24 @@
 const {Models} = require('../models');
+const emailQueue = require('../workers/email.js');
 
-const getUserBookings = async(request,reply)=>{
-    const {userId} = request.params
+
+const getBooking = async(request,reply)=>{
+    const {bookingId} = request.params;
+
     try {
-        const user = await Models.User.findOne({
-            where:{
-                userId: userId
-            }
-        })
-        if(!user){
-            return reply('User does not exist').code(401);
-        }
-        const bookings = Models.Booking.findAll({
-            where:{
-                userId: userId
+        const booking = await Booking.findOne({
+            where: {
+                bookingId: bookingId
             }
         });
 
-        if(!bookings){
-            return reply('No bookings for this user').code(401);
+        if(!booking){
+            return reply('Error in getting the booking').code(401);
         }
 
-        return reply(bookings);
+        return reply(booking).code(200);
     } catch (error) {
+        console.log(error);
         return reply('Internal server error').code(500);
     }
 }
@@ -89,7 +85,7 @@ const deleteBooking = async(request,reply)=>{
         if (!booking) {
             return reply('booking does not exist').code(401);
         }
-        
+
         const deletedBooking = await Models.Booking.destroy({
                 where: bookingId
             }
@@ -104,11 +100,11 @@ const deleteBooking = async(request,reply)=>{
         console.log(error);
         return reply('Internal Server Error').code(500);
     }
-}
+};
 
 module.exports = {
-    getUserBookings,
+    getBooking,
     createBooking,
     updateBooking,
     deleteBooking
-}
+};

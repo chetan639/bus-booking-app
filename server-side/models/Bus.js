@@ -14,7 +14,8 @@ module.exports = (sequelize) => {
         },
         busNumber: {
             type: Sequelize.INTEGER,
-            allowNull: false
+            allowNull: false,
+            unique: true
         },
         busType: {
             type: Sequelize.ENUM(seater, semiSleeper, sleeper),
@@ -32,8 +33,9 @@ module.exports = (sequelize) => {
         },
         rating: {
             type: Sequelize.INTEGER,
-            allowNull: false,
-            defaultValue: 0
+            defaultValue: 0,
+            max: 5,
+            min: 0
         },
         isAC: {
             type: Sequelize.BOOLEAN,

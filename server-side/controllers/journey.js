@@ -1,14 +1,28 @@
 const {Models} = require('../models');
+const {getOrSetToRedis,clearRedis} = require('../utils/redis.js');
 
 const getJourney = async(request,reply)=>{
     const {journeyId} = request.params;
 
     try {
-        const journey = await Models.Journey.findOne({
-            where:{
-                journeyId: journeyId
+        const journey = await getOrSetToRedis(`journey:${journeyId}`,Models.Journey,async (Journey)=>{
+            const journey = await Models.Journey.findOne({
+                where:{
+                    journeyId: journeyId
+                },
+                include:[{
+                    model: Models.Route,
+                    required: true
+                },{
+                    model: Models.Bus,
+                    required: true
+                }]
+            });
+            if(!journey){
+                return;
             }
-        });
+            return journey;
+        })
 
         if(!journey){
             return reply('Error in getting journey').code(401);
@@ -20,33 +34,33 @@ const getJourney = async(request,reply)=>{
         return reply('Internal server error').code(500);
     }
 }
-const getBusJourneys = async(request,reply)=>{
-    const {busId} = request.params
-    try {
-        const bus = await Models.Bus.findOne({
-            where:{
-                busId: busId
-            }
-        })
-        if(!bus){
-            return reply('Bus does not exist').code(401);
-        }
-        const journeys = Models.Journey.findAll({
-            where:{
-                busId: busId
-            }
-        });
+// const getBusJourneys = async(request,reply)=>{
+//     const {busId} = request.params
+//     try {
+//         const bus = await Models.Bus.findOne({
+//             where:{
+//                 busId: busId
+//             }
+//         })
+//         if(!bus){
+//             return reply('Bus does not exist').code(401);
+//         }
+//         const journeys = Models.Journey.findAll({
+//             where:{
+//                 busId: busId
+//             }
+//         });
 
-        if(!journeys){
-            return reply('No journeys for this bus').code(401);
-        }
+//         if(!journeys){
+//             return reply('No journeys for this bus').code(401);
+//         }
 
-        return reply(journeys);
-    } catch (error) {
-        console.log(error);
-        return reply('Internal server error').code(500);
-    }
-}
+//         return reply(journeys);
+//     } catch (error) {
+//         console.log(error);
+//         return reply('Internal server error').code(500);
+//     }
+// }
 
 const createJourney = async (request,reply)=>{
     const journeyDetails = request.payload;
@@ -127,7 +141,7 @@ const deleteJourney = async(request,reply)=>{
 
 module.exports = {
     getJourney,
-    getBusJourneys,
+    // getBusJourneys,
     createJourney,
     updateJourney,
     deleteJourney

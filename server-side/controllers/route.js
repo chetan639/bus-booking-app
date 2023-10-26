@@ -1,15 +1,23 @@
 const {Models} = require('../models');
+const {getOrSetToRedis,clearRedis} = require('../utils/redis.js');
 
 const getRoute = async(request,reply)=>{
     const {routeId} = request.params;
 
     try {
-        const route = await Models.Route.findOne({
-            where:{
-                routeId: routeId
+        const route = await getOrSetToRedis(`route:${routeId}`, Models.Route, async (Route)=>{
+            try {
+                const route = await Route.findOne({
+                    where:{
+                        routeId: routeId
+                    }
+                });
+                return route;   
+            } catch (error) {
+                console.log(error);
+                return;
             }
-        });
-
+        })
         if(!route){
             return reply('Error in getting route').code(401);
         }
@@ -51,6 +59,7 @@ const updateRoute = async(request,reply)=>{
         if (!route) {
             return reply('route does not exist').code(401);
         }
+
         const updatedRoute = await Models.Route.update(
             updatedDetails,
             {
@@ -63,6 +72,7 @@ const updateRoute = async(request,reply)=>{
         if(!updatedRoute){
             return reply('Error updating route').code(401);
         }
+
         return reply('route details updated successfully').code(200);
     } catch (error) {
         console.log(error);
