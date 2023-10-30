@@ -5,10 +5,11 @@ const serverConfig = config.get('server');
 const AuthCookie = require('hapi-auth-cookie');
 const { Models } = require('./models');
 const { booking, bus, journey, operator, route, user } = require('./routes');
-const emailQueue = require('./workers/email.js');
+// const hooks = require('./hooks');
+// const emailQueue = require('./workers/email.js');
 
 
-const { sequelize } = require('./models/index.js');
+const {sequelize} = require('./models');
 
 
 const startServer = async () => {
@@ -86,7 +87,7 @@ process.on('unhandledRejection', (err) => {
 
 const startDB = async () => {
     try {
-        await sequelize.authenticate()
+        await sequelize.authenticate();
         console.log('Connection has been established successfully');
     } catch (error) {
         console.log('Error in connection:', error);

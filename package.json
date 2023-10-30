@@ -16,6 +16,7 @@
     "hapi": "~16.1.0",
     "hapi-auth-cookie": "^7.0.0",
     "joi": "~10.2.2",
+    "nodemailer": "^6.9.7",
     "nodemon": "^3.0.1",
     "pg": "^8.7.1",
     "pg-hstore": "~2.3.2",

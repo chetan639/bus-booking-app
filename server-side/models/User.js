@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-
+const bcrypt = require('bcrypt');
 module.exports = (sequelize)=>{
     const User = sequelize.define('user',{
         userId:{
@@ -49,6 +49,9 @@ module.exports = (sequelize)=>{
         },
         isOperator:{
             type: Sequelize.BOOLEAN
+        },
+        sendEmailDate:{
+            type: Sequelize.DATE
         }
     },{
         paranoid: true,

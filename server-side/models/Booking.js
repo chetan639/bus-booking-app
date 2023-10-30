@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const emailQueue = require('../workers/email.js');
+
 module.exports = (sequelize)=>{
     const Booking = sequelize.define('booking',{
         bookingId: {
@@ -37,12 +37,6 @@ module.exports = (sequelize)=>{
         }
     },{
         paranoid: true,
-        hooks:{
-            afterCreate: async(booking,options)=>{
-                console.log('Booking confirmed!',booking);
-                emailQueue.add({message: 'Booking confirmed!'});
-            }
-        }
     });
 
     Booking.associate = models => {

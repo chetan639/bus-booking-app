@@ -1,12 +1,10 @@
 const {Models} = require('../models');
-const emailQueue = require('../workers/email.js');
-
 
 const getBooking = async(request,reply)=>{
     const {bookingId} = request.params;
 
     try {
-        const booking = await Booking.findOne({
+        const booking = await Models.Booking.findOne({
             where: {
                 bookingId: bookingId
             }
