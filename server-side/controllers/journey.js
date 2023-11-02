@@ -61,6 +61,9 @@ const getJourney = async(request,reply)=>{
 //         return reply('Internal server error').code(500);
 //     }
 // }
+const getJourneyBySearch = async(request,reply)=>{
+      
+}
 
 const createJourney = async (request,reply)=>{
     const journeyDetails = request.payload;

@@ -1,5 +1,7 @@
 const {Models} = require('../models');
+const {routeMapping} = require('../commonConstants/elasticConstants.js');
 const {getOrSetToRedis,clearRedis} = require('../utils/redis.js');
+const {searchIndex,checkIndex,createIndex,addDocument,updateDocument,deleteDocument,mapping} =  require('../utils/elastic.js');
 
 const getRoute = async(request,reply)=>{
     const {routeId} = request.params;

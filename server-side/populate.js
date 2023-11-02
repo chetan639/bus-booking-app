@@ -1,4 +1,5 @@
 const {Booking,Bus,Journey,Operator,Rating,Route,Session,User} = require('./models').Models;
+const elasticUtils = require('./utils/elastic.js');
 
 const bookingDummyData = [
     {
@@ -486,60 +487,155 @@ const operatorDummyData = [
   // Add more operator objects as needed
 ];
 const routeDummyData = [
-    {
-      source: "City P",
-      destination: "City Q",
-      inBetweenStops: [
-        {
-          stopName: "Stop 14",
-          distanceFromSource: 10,
-          timeFromSource: "1 hour"
-        },
-        {
-          stopName: "Stop 15",
-          distanceFromSource: 20,
-          timeFromSource: "2 hours"
-        },
-        {
-          stopName: "Stop 16",
-          distanceFromSource: 30,
-          timeFromSource: "3 hours"
-        }
-      ]
-    },
-    {
-      source: "City Q",
-      destination: "City R",
-      inBetweenStops: [
-        {
-          stopName: "Stop 17",
-          distanceFromSource: 15,
-          timeFromSource: "1.5 hours"
-        },
-        {
-          stopName: "Stop 18",
-          distanceFromSource: 30,
-          timeFromSource: "3 hours"
-        },
-        {
-          stopName: "Stop 19",
-          distanceFromSource: 45,
-          timeFromSource: "4.5 hours"
-        }
-      ]
-    },
-    {
-      source: "City S",
-      destination: "City T",
-      inBetweenStops: [
-        {
-          stopName: "Stop 20",
-          distanceFromSource: 5,
-          timeFromSource: "0.5 hours"
-        }
-      ]
-    },
+  {
+    source: "City A",
+    destination: "City B",
+    inBetweenStops: [
+      {
+        stopName: "Stop 1",
+        distanceFromSource: 10,
+        timeFromSource: "1 hour"
+      },
+      {
+        stopName: "Stop 2",
+        distanceFromSource: 20,
+        timeFromSource: "2 hours"
+      },
+      {
+        stopName: "Stop 3",
+        distanceFromSource: 30,
+        timeFromSource: "3 hours"
+      }
+    ]
+  },
+  {
+    source: "City B",
+    destination: "City C",
+    inBetweenStops: [
+      {
+        stopName: "Stop 4",
+        distanceFromSource: 15,
+        timeFromSource: "1.5 hours"
+      },
+      {
+        stopName: "Stop 5",
+        distanceFromSource: 30,
+        timeFromSource: "3 hours"
+      },
+      {
+        stopName: "Stop 6",
+        distanceFromSource: 45,
+        timeFromSource: "4.5 hours"
+      }
+    ]
+  },
+  {
+    source: "City D",
+    destination: "City E",
+    inBetweenStops: [
+      {
+        stopName: "Stop 7",
+        distanceFromSource: 5,
+        timeFromSource: "0.5 hours"
+      },
+      {
+        stopName: "Stop 8",
+        distanceFromSource: 10,
+        timeFromSource: "1 hour"
+      }
+    ]
+  },
+  {
+    source: "City F",
+    destination: "City G",
+    inBetweenStops: [
+      {
+        stopName: "Stop 9",
+        distanceFromSource: 10,
+        timeFromSource: "1 hour"
+      },
+      {
+        stopName: "Stop 10",
+        distanceFromSource: 20,
+        timeFromSource: "2 hours"
+      },
+      {
+        stopName: "Stop 11",
+        distanceFromSource: 30,
+        timeFromSource: "3 hours"
+      },
+      {
+        stopName: "Stop 12",
+        distanceFromSource: 40,
+        timeFromSource: "4 hours"
+      }
+    ]
+  },
+  {
+    source: "City H",
+    destination: "City I",
+    inBetweenStops: [
+      {
+        stopName: "Stop 13",
+        distanceFromSource: 5,
+        timeFromSource: "0.5 hours"
+      }
+    ]
+  },
   // Additional routes and in-between stops
+  {
+    source: "City P",
+    destination: "City Q",
+    inBetweenStops: [
+      {
+        stopName: "Stop 14",
+        distanceFromSource: 10,
+        timeFromSource: "1 hour"
+      },
+      {
+        stopName: "Stop 15",
+        distanceFromSource: 20,
+        timeFromSource: "2 hours"
+      },
+      {
+        stopName: "Stop 16",
+        distanceFromSource: 30,
+        timeFromSource: "3 hours"
+      }
+    ]
+  },
+  {
+    source: "City Q",
+    destination: "City R",
+    inBetweenStops: [
+      {
+        stopName: "Stop 17",
+        distanceFromSource: 15,
+        timeFromSource: "1.5 hours"
+      },
+      {
+        stopName: "Stop 18",
+        distanceFromSource: 30,
+        timeFromSource: "3 hours"
+      },
+      {
+        stopName: "Stop 19",
+        distanceFromSource: 45,
+        timeFromSource: "4.5 hours"
+      }
+    ]
+  },
+  {
+    source: "City S",
+    destination: "City T",
+    inBetweenStops: [
+      {
+        stopName: "Stop 20",
+        distanceFromSource: 5,
+        timeFromSource: "0.5 hours"
+      }
+    ]
+  },
   {
     source: "City X",
     destination: "City Y",
@@ -615,8 +711,8 @@ const routeDummyData = [
     try {
         // await User.bulkCreate(userDummyData);
         // await Operator.bulkCreate(operatorDummyData);
-        await Bus.bulkCreate(busDummyData);
-        // await Route.bulkCreate(routeDummyData);
+        // await Bus.bulkCreate(busDummyData);
+        await Route.bulkCreate(routeDummyData);
         // await Journey.bulkCreate(journeyDummyData);
         // await Booking.bulkCreate(bookingDummyData);
     } catch (error) {
@@ -624,4 +720,45 @@ const routeDummyData = [
     }
 }
 
-populateData();
+// populateData();
+
+let data = []
+
+const addToElastic = async ()=>{
+  try {
+    const joinedData = await Journey.findAll({
+      include: [
+        {
+          model: Bus,
+          required: true
+        },
+        {
+          model: Route,
+          required: true
+        }
+      ]
+    });
+
+    console.log("Joined data:",joinedData.length);
+
+    if(!joinedData){
+      console.log("error in joining data");
+      return;
+    }
+    // console.log("-------------Joined Data------------",joinedData);
+    // data = [...joinedData]
+    // elasticUtils.addDocument('joined_data','_doc',joinedData);
+    for(let data of joinedData){
+        await elasticUtils.addDocument('joined_data','_doc',data);
+    }
+
+    // elasticUtils.bulkAdd('joined_data','_doc',joinedData);
+
+
+  } catch (error) {
+    console.log('Error in populating elastic',error);
+    return;
+  }
+}
+
+addToElastic();

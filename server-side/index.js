@@ -4,13 +4,11 @@ const config = require('config');
 const serverConfig = config.get('server');
 const AuthCookie = require('hapi-auth-cookie');
 const { Models } = require('./models');
-const { booking, bus, journey, operator, route, user } = require('./routes');
+const { booking, bus, journey, operator, route, user, elasticSearch } = require('./routes');
 // const hooks = require('./hooks');
 // const emailQueue = require('./workers/email.js');
-
-
 const {sequelize} = require('./models');
-
+const {startElastic} = require('./utils/elastic');
 
 const startServer = async () => {
 
@@ -78,6 +76,7 @@ const startServer = async () => {
     server.route(journey);
     server.route(booking);
     server.route(route);
+    server.route(elasticSearch);
 }
 
 process.on('unhandledRejection', (err) => {
@@ -94,6 +93,10 @@ const startDB = async () => {
     }
 }
 
+// const startElastic = ()=>{
+    
+// }
+
 // const startRedis = () => {
     
 //     // redisClient.flushAll()
@@ -107,6 +110,7 @@ const startDB = async () => {
 
 startServer();
 startDB();
+startElastic();
 // startRedis()
 // emailQueue.isReady().then(()=>{
 //     emailQueue.resume();
