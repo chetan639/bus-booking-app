@@ -1,0 +1,32 @@
+/* NavBar.css */
+
+.navbar {
+    background-color: #007bff;
+    padding: 10px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .nav-list {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .nav-item {
+    margin: 0 10px;
+  }
+  
+  .nav-link {
+    text-decoration: none;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 600;
+    transition: color 0.3s;
+  }
+  
+  .nav-link:hover {
+    color: #f0f0f0;
+  }
+  

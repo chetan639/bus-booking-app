@@ -1,25 +1,50 @@
-import logo from './logo.svg';
 import './App.css';
+import Home from './components/Home.js';
+import {BrowserRouter as Router, Switch, Route, Link} from 'react-router-dom';
+import Login from './components/Login.js';
+import UserProfile from './components/UserProfile.js';
+import Signup from './components/Signup.js';
+import NavBar from './components/NavBar';
+import { useState } from 'react';
+import {connect} from 'react-redux';
+import JourneyList from './components/JourneyList';
+import AddBus from './components/AddBus';
+import AddJourney from './components/AddJourney';
 
-function App() {
+function App({isLoggedIn}) {
+  if (!isLoggedIn) {
+    return <Login/>
+  }
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Router>
+        <NavBar/>
+        <Switch>
+          <Route exact path="/">
+            <Home />
+          </Route>
+          <Route path="/userProfile">
+            <UserProfile/>
+          </Route>
+          <Route path="/journeyList"> 
+            <JourneyList/>
+          </Route>
+          <Route path="/addBus"> 
+            <AddBus/>
+          </Route>
+          <Route path="/addJourney"> 
+            <AddJourney/>
+          </Route>
+        </Switch>
+      </Router>
     </div>
   );
 }
 
-export default App;
+const mapStateToProps = state =>{
+  return{
+    isLoggedIn: state.isLoggedIn
+  }
+}
+
+export default connect(mapStateToProps)(App);
